@@ -1,83 +1,51 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Shirt } from "lucide-react";
 
-const Footer = () => {
+export const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white py-12 px-4">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div>
-          <h3 className="text-xl font-bold mb-4 flex items-center">
-            <span className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              OutfitMatch
+    <footer className="bg-gray-50 border-t border-gray-200 py-12">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="flex items-center mb-6 md:mb-0">
+            <Shirt className="h-8 w-8 text-primary mr-2" />
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+              OutfitMatch Pro
             </span>
-          </h3>
-          <p className="text-gray-400">
-            AI-powered outfit suggestions to elevate your style game.
-          </p>
-        </div>
-        <div>
-          <h4 className="font-medium mb-4">Quick Links</h4>
-          <ul className="space-y-2">
-            <li>
-              <Link
-                to="/"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/upload"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                Upload
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/wardrobe"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                Wardrobe
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/outfits"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                Outfit Suggestions
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h4 className="font-medium mb-4">Connect With Us</h4>
-          <div className="flex space-x-4">
-            <a
-              href="#"
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              Twitter
-            </a>
-            <a
-              href="#"
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              Instagram
-            </a>
-            <a
-              href="#"
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              Facebook
-            </a>
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-8">
+            <div>
+              <h3 className="font-semibold mb-3">Features</h3>
+              <ul className="space-y-2 text-gray-600">
+                <li>Digital Wardrobe</li>
+                <li>AI Suggestions</li>
+                <li>Mix & Match</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-3">Resources</h3>
+              <ul className="space-y-2 text-gray-600">
+                <li>Help Center</li>
+                <li>Style Guide</li>
+                <li>Blog</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-3">Company</h3>
+              <ul className="space-y-2 text-gray-600">
+                <li>About Us</li>
+                <li>Contact</li>
+                <li>Privacy Policy</li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="max-w-7xl mx-auto mt-8 pt-8 border-t border-gray-800 text-center text-gray-500">
-        <p>© {new Date().getFullYear()} OutfitMatch. All rights reserved.</p>
+
+        <div className="mt-12 pt-8 border-t border-gray-200 text-center text-gray-500 text-sm">
+          <p>© {new Date().getFullYear()} OutfitMatch. All rights reserved.</p>
+        </div>
       </div>
     </footer>
   );

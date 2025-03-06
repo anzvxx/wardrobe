@@ -8,6 +8,7 @@ import LoadingAnimation from "./components/common/LoadingAnimation";
 const Upload = lazy(() => import("./routes/Upload"));
 const Wardrobe = lazy(() => import("./routes/Wardrobe"));
 const Outfits = lazy(() => import("./routes/Outfits"));
+const Login = lazy(() => import("./routes/Login"));
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/upload" element={<Upload />} />
           <Route path="/wardrobe" element={<Wardrobe />} />
           <Route path="/outfits" element={<Outfits />} />
+          <Route path="/login" element={<Login />} />
           {/* Add the tempo route to prevent catchall issues */}
           {import.meta.env.VITE_TEMPO === "true" && (
             <Route path="/tempobook/*" />

@@ -30,13 +30,13 @@ const Header = ({
   userName = "Guest User",
   avatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=outfit",
   isLoggedIn = false,
-  onLogin = () => console.log("Login clicked"),
+  onLogin = () => (window.location.href = "/login"),
   onSignup = () => console.log("Signup clicked"),
   onLogout = () => console.log("Logout clicked"),
   onProfileClick = () => console.log("Profile clicked"),
 }: HeaderProps) => {
   return (
-    <header className="w-full h-20 bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-50">
+    <header className="w-full h-20 bg-white border-b border-gray-200 shadow-md fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto h-full px-4 flex items-center justify-between">
         {/* Logo and Brand */}
         <motion.div
@@ -47,35 +47,35 @@ const Header = ({
         >
           <Link to="/" className="flex items-center">
             <Shirt className="h-8 w-8 text-primary mr-2" />
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              OutfitMatch
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent tracking-tight">
+              OutfitMatch Pro
             </span>
           </Link>
         </motion.div>
 
         {/* Navigation Links - Desktop */}
-        <nav className="hidden md:flex items-center space-x-6">
+        <nav className="hidden md:flex items-center space-x-8">
           <Link
             to="/"
-            className="text-gray-700 hover:text-primary transition-colors"
+            className="text-gray-700 hover:text-primary transition-colors font-medium"
           >
             Home
           </Link>
           <Link
             to="/upload"
-            className="text-gray-700 hover:text-primary transition-colors"
+            className="text-gray-700 hover:text-primary transition-colors font-medium"
           >
             Upload
           </Link>
           <Link
             to="/wardrobe"
-            className="text-gray-700 hover:text-primary transition-colors"
+            className="text-gray-700 hover:text-primary transition-colors font-medium"
           >
             My Wardrobe
           </Link>
           <Link
             to="/outfits"
-            className="text-gray-700 hover:text-primary transition-colors"
+            className="text-gray-700 hover:text-primary transition-colors font-medium"
           >
             Outfit Suggestions
           </Link>

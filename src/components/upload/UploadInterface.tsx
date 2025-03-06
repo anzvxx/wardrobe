@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { ArrowRight, Save, X } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowRight, Check } from "lucide-react";
 import DragDropZone from "./DragDropZone";
 import CategorySelector from "./CategorySelector";
 import ImagePreview from "./ImagePreview";
@@ -17,230 +17,210 @@ interface UploadInterfaceProps {
   onCancel?: () => void;
 }
 
-const UploadInterface = ({
+export const UploadInterface = ({
   onUploadComplete = () => {},
   onCancel = () => {},
 }: UploadInterfaceProps) => {
-  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [activeStep, setActiveStep] = useState<
+    "upload" | "categorize" | "preview"
+  >("upload");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [category, setCategory] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
   const [itemName, setItemName] = useState<string>("");
 
   const handleFileAccepted = (file: File) => {
     setUploadedFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreviewUrl(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-    // Move to next step after a short delay
-    setTimeout(() => setCurrentStep(2), 500);
+    setItemName(file.name.split(".")[0].replace(/[-_]/g, " "));
+    setActiveStep("categorize");
   };
 
-  const handleCategorySelect = (category: string) => {
-    setSelectedCategory(category);
-    // Move to next step after a short delay
-    setTimeout(() => setCurrentStep(3), 500);
+  const handleCategorySelect = (selectedCategory: string) => {
+    setCategory(selectedCategory);
+    setActiveStep("preview");
   };
 
-  const handleSubmit = () => {
-    if (!uploadedFile || !selectedCategory) return;
+  const handleUploadComplete = () => {
+    if (!uploadedFile || !category) return;
 
     setIsUploading(true);
 
-    // Simulate upload process
+    // Simulate upload delay
     setTimeout(() => {
       onUploadComplete({
         id: `item-${Date.now()}`,
         image: uploadedFile,
-        category: selectedCategory,
-        name: itemName || uploadedFile.name,
+        category,
+        name: itemName,
       });
       setIsUploading(false);
-      resetForm();
     }, 1500);
   };
 
-  const resetForm = () => {
-    setCurrentStep(1);
+  const handleReset = () => {
     setUploadedFile(null);
-    setImagePreviewUrl("");
-    setSelectedCategory("");
+    setCategory("");
     setItemName("");
+    setActiveStep("upload");
   };
 
   return (
-    <Card className="w-full max-w-5xl mx-auto bg-white shadow-lg">
-      <CardHeader className="border-b">
-        <CardTitle className="text-2xl font-bold flex justify-between items-center">
-          <span>Upload Clothing Item</span>
-          <Button variant="ghost" size="icon" onClick={onCancel}>
-            <X className="h-5 w-5" />
-          </Button>
-        </CardTitle>
-      </CardHeader>
+    <Card className="w-full max-w-4xl mx-auto bg-white shadow-lg">
       <CardContent className="p-6">
-        <div className="mb-6">
-          <Tabs value={`step-${currentStep}`} className="w-full">
-            <TabsList className="grid grid-cols-3 w-full">
-              <TabsTrigger
-                value="step-1"
-                disabled={currentStep !== 1}
-                onClick={() => setCurrentStep(1)}
-                className={currentStep >= 1 ? "text-primary" : ""}
-              >
-                1. Upload Image
-              </TabsTrigger>
-              <TabsTrigger
-                value="step-2"
-                disabled={currentStep < 2}
-                onClick={() => uploadedFile && setCurrentStep(2)}
-                className={currentStep >= 2 ? "text-primary" : ""}
-              >
-                2. Select Category
-              </TabsTrigger>
-              <TabsTrigger
-                value="step-3"
-                disabled={currentStep < 3}
-                onClick={() =>
-                  uploadedFile && selectedCategory && setCurrentStep(3)
-                }
-                className={currentStep >= 3 ? "text-primary" : ""}
-              >
-                3. Review & Save
-              </TabsTrigger>
-            </TabsList>
+        <Tabs value={activeStep} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsTrigger
+              value="upload"
+              onClick={() => uploadedFile && setActiveStep("upload")}
+              disabled={!uploadedFile && activeStep !== "upload"}
+            >
+              1. Upload
+            </TabsTrigger>
+            <TabsTrigger
+              value="categorize"
+              onClick={() => uploadedFile && setActiveStep("categorize")}
+              disabled={!uploadedFile || activeStep === "upload"}
+            >
+              2. Categorize
+            </TabsTrigger>
+            <TabsTrigger
+              value="preview"
+              onClick={() => category && setActiveStep("preview")}
+              disabled={
+                !category ||
+                activeStep === "upload" ||
+                activeStep === "categorize"
+              }
+            >
+              3. Preview
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="step-1" className="mt-6">
-              <div className="flex flex-col items-center">
-                <h3 className="text-xl font-medium mb-4">
-                  Upload Your Clothing Item
-                </h3>
-                <p className="text-gray-500 mb-6 text-center max-w-md">
-                  Drag and drop an image of your clothing item or click to
-                  browse your files. We support JPG, PNG and WebP formats.
-                </p>
-                <div className="w-full max-w-xl">
-                  <DragDropZone
-                    onFileAccepted={handleFileAccepted}
-                    isUploading={isUploading}
-                  />
-                </div>
+          <TabsContent value="upload" className="mt-0">
+            <div className="flex flex-col items-center">
+              <DragDropZone
+                onFileAccepted={handleFileAccepted}
+                isUploading={isUploading}
+              />
+
+              <div className="mt-6 flex justify-end w-full">
+                <Button variant="outline" onClick={onCancel} className="mr-2">
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => uploadedFile && setActiveStep("categorize")}
+                  disabled={!uploadedFile}
+                >
+                  Next Step
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
               </div>
-            </TabsContent>
+            </div>
+          </TabsContent>
 
-            <TabsContent value="step-2" className="mt-6">
-              <div className="flex flex-col items-center">
-                <h3 className="text-xl font-medium mb-4">
-                  Categorize Your Item
-                </h3>
-                <p className="text-gray-500 mb-6 text-center max-w-md">
-                  Select the appropriate category for your clothing item to help
-                  us organize your wardrobe and create better outfit
-                  suggestions.
-                </p>
-                <div className="w-full max-w-xl">
-                  <CategorySelector
-                    onCategorySelect={handleCategorySelect}
-                    selectedCategory={selectedCategory}
-                    isDisabled={isUploading}
-                  />
-                </div>
+          <TabsContent value="categorize" className="mt-0">
+            <div className="flex flex-col items-center">
+              <CategorySelector
+                onCategorySelect={handleCategorySelect}
+                selectedCategory={category}
+                isDisabled={isUploading}
+              />
+
+              <div className="mt-6 flex justify-between w-full">
+                <Button
+                  variant="outline"
+                  onClick={() => setActiveStep("upload")}
+                >
+                  Back
+                </Button>
+                <Button
+                  onClick={() => category && setActiveStep("preview")}
+                  disabled={!category}
+                >
+                  Next Step
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
               </div>
-            </TabsContent>
+            </div>
+          </TabsContent>
 
-            <TabsContent value="step-3" className="mt-6">
-              <div className="flex flex-col items-center">
-                <h3 className="text-xl font-medium mb-4">Review & Save</h3>
-                <p className="text-gray-500 mb-6 text-center max-w-md">
-                  Review your clothing item details and make any final
-                  adjustments before saving it to your wardrobe.
-                </p>
-                <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+          <TabsContent value="preview" className="mt-0">
+            <div className="flex flex-col items-center">
+              <div className="flex flex-col md:flex-row gap-8 items-center justify-center w-full">
+                {uploadedFile && (
                   <ImagePreview
-                    imageUrl={imagePreviewUrl}
-                    category={selectedCategory}
-                    onCategoryChange={() => setCurrentStep(2)}
-                    onDelete={resetForm}
+                    imageUrl={URL.createObjectURL(uploadedFile)}
+                    category={category}
+                    onCategoryChange={() => setActiveStep("categorize")}
                   />
+                )}
 
-                  <div className="w-full max-w-md space-y-6">
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="item-name"
-                        className="block text-sm font-medium"
-                      >
-                        Item Name (Optional)
+                <div className="bg-gray-50 p-6 rounded-lg w-full max-w-md">
+                  <h3 className="text-lg font-medium mb-4">Item Details</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Item Name
                       </label>
                       <input
                         type="text"
-                        id="item-name"
-                        placeholder="E.g., Blue Cotton T-Shirt"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full p-2 border border-gray-300 rounded-md"
                         value={itemName}
                         onChange={(e) => setItemName(e.target.value)}
-                        disabled={isUploading}
+                        placeholder="Enter item name"
                       />
                     </div>
 
-                    <div className="pt-4 flex justify-between">
-                      <Button
-                        variant="outline"
-                        onClick={() => setCurrentStep(2)}
-                        disabled={isUploading}
-                      >
-                        Back
-                      </Button>
-                      <Button
-                        onClick={handleSubmit}
-                        disabled={isUploading}
-                        className="gap-2"
-                      >
-                        {isUploading ? "Saving..." : "Save to Wardrobe"}
-                        {!isUploading && <Save className="h-4 w-4" />}
-                      </Button>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Category
+                      </label>
+                      <div className="flex items-center">
+                        <span className="bg-primary/10 text-primary px-3 py-1 rounded-md text-sm font-medium">
+                          {category.charAt(0).toUpperCase() + category.slice(1)}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setActiveStep("categorize")}
+                          className="ml-2 text-xs"
+                        >
+                          Change
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </TabsContent>
-          </Tabs>
-        </div>
 
-        {currentStep < 3 && (
-          <div className="flex justify-end mt-6">
-            {currentStep > 1 && (
-              <Button
-                variant="outline"
-                onClick={() => setCurrentStep(currentStep - 1)}
-                className="mr-2"
-                disabled={isUploading}
-              >
-                Back
-              </Button>
-            )}
-            {currentStep === 1 && uploadedFile && (
-              <Button
-                onClick={() => setCurrentStep(2)}
-                disabled={isUploading}
-                className="gap-2"
-              >
-                Next Step <ArrowRight className="h-4 w-4" />
-              </Button>
-            )}
-            {currentStep === 2 && selectedCategory && (
-              <Button
-                onClick={() => setCurrentStep(3)}
-                disabled={isUploading}
-                className="gap-2"
-              >
-                Next Step <ArrowRight className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        )}
+              <div className="mt-8 flex justify-between w-full">
+                <Button
+                  variant="outline"
+                  onClick={() => setActiveStep("categorize")}
+                >
+                  Back
+                </Button>
+                <Button
+                  onClick={handleUploadComplete}
+                  disabled={isUploading || !uploadedFile || !category}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {isUploading ? (
+                    <>
+                      <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="mr-2 h-4 w-4" />
+                      Complete Upload
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   );
