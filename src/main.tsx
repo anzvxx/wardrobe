@@ -5,8 +5,15 @@ import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import { WardrobeProvider } from "./context/WardrobeContext";
 
-import { TempoDevtools } from "tempo-devtools";
-TempoDevtools.init();
+// Initialize Tempo Devtools
+try {
+  if (import.meta.env.VITE_TEMPO === "true") {
+    const { TempoDevtools } = await import("tempo-devtools");
+    TempoDevtools.init();
+  }
+} catch (err) {
+  console.error("Failed to initialize Tempo Devtools:", err);
+}
 
 const basename = import.meta.env.BASE_URL;
 

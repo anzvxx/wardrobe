@@ -1,7 +1,6 @@
 import { Suspense, lazy } from "react";
-import { useRoutes, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Home from "./components/home";
-import routes from "tempo-routes";
 import LoadingAnimation from "./components/common/LoadingAnimation";
 
 // Lazy load routes for better performance
@@ -9,6 +8,9 @@ const Upload = lazy(() => import("./routes/Upload"));
 const Wardrobe = lazy(() => import("./routes/Wardrobe"));
 const Outfits = lazy(() => import("./routes/Outfits"));
 const Login = lazy(() => import("./routes/Login"));
+
+// Dynamic import for tempo-routes
+let TempoRoutes = [];
 
 function App() {
   return (
@@ -19,20 +21,22 @@ function App() {
         </div>
       }
     >
-      <>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/wardrobe" element={<Wardrobe />} />
-          <Route path="/outfits" element={<Outfits />} />
-          <Route path="/login" element={<Login />} />
-          {/* Add the tempo route to prevent catchall issues */}
-          {import.meta.env.VITE_TEMPO === "true" && (
-            <Route path="/tempobook/*" />
-          )}
-        </Routes>
-        {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
-      </>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/upload" element={<Upload />} />
+        <Route path="/wardrobe" element={<Wardrobe />} />
+        <Route path="/outfits" element={<Outfits />} />
+        <Route path="/login" element={<Login />} />
+        {/* Add the tempo route to prevent catchall issues */}
+        {import.meta.env.VITE_TEMPO === "true" && (
+          <Route path="/tempobook/*" element={null} />
+        )}
+      </Routes>
+
+      {/* Tempo routes are handled differently */}
+      {import.meta.env.VITE_TEMPO === "true" && (
+        <div id="tempo-routes-container"></div>
+      )}
     </Suspense>
   );
 }
